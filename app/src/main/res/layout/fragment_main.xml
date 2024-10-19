@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.hc.subway_station_locator.presentation.view_model.MainViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="20dp"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="20dp"/>
+
+        <TextView
+            android:id="@+id/textView_titleNextSubwayStation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_title_next_subway_station"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            android:layout_marginTop="30dp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textView_lastUpdatedAt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.currentLocation.isSet ? @string/current_time(viewModel.currentLocation.valueOnSet.lastUpdatedAt) : @string/empty_string}"
+            tools:text="12:34:56 기준"
+            android:textColor="@color/black_700"
+            android:textSize="@dimen/text_size_middle"
+            app:layout_constraintEnd_toStartOf="@id/imageView_update"
+            app:layout_constraintTop_toTopOf="@id/imageView_update"
+            app:layout_constraintBottom_toBottomOf="@id/imageView_update"
+            android:layout_marginEnd="4dp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageView_update"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:background="@drawable/ic_refresh_24px"
+            android:backgroundTint="@color/black_500"
+            android:onClick="@{(_) -> viewModel.fetchCurrentLocation()}"
+            app:layout_constraintEnd_toEndOf="@id/guideline_end"
+            app:layout_constraintBottom_toBottomOf="@id/textView_titleNextSubwayStation" />
+
+        <include
+            android:id="@+id/layout_subwayStationLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            layout="@layout/layout_subway_station_location"
+            app:viewModel="@{viewModel}"
+            app:layout_constraintTop_toBottomOf="@id/textView_titleNextSubwayStation"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintEnd_toEndOf="@id/guideline_end"
+            android:layout_marginTop="20dp" />
+
+        <include
+            android:id="@+id/subwayStationInformation_distanceToNextSubwayStation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            layout="@layout/layout_subway_station_information"
+            app:subwayStationInformationTitle="@{@string/distance_to_next_subway_station}"
+            app:subwayStationInformationContent="@{@string/distance_in_meter(viewModel.distanceFromNextSubwayStation.valueOnSet)}"
+            tools:subwayStationInformationContent="12,345m"
+            app:layout_constraintTop_toBottomOf="@id/layout_subwayStationLocation"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintEnd_toStartOf="@id/subwayStationInformation_remainingSubwayStations"
+            android:layout_marginTop="30dp"
+            app:layout_constraintHorizontal_chainStyle="packed"/>
+
+        <include
+            android:id="@+id/subwayStationInformation_remainingSubwayStations"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            layout="@layout/layout_subway_station_information"
+            app:subwayStationInformationTitle="@{@string/remaining_subway_stations}"
+            app:subwayStationInformationContent="@{viewModel.remainingSubwayStations.isSet ? @string/subway_station_count(viewModel.remainingSubwayStations.valueOnSet) : null}"
+            app:layout_constraintTop_toTopOf="@id/subwayStationInformation_distanceToNextSubwayStation"
+            app:layout_constraintStart_toEndOf="@id/subwayStationInformation_distanceToNextSubwayStation"
+            app:layout_constraintEnd_toEndOf="@id/guideline_end"
+            android:layout_marginStart="10dp"
+            app:layout_constraintHorizontal_chainStyle="packed"/>
+
+        <TextView
+            android:id="@+id/textView_subwayStationRouteTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_title_subway_station_route"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/subwayStationInformation_distanceToNextSubwayStation"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            android:layout_marginTop="30dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_subwayStationInterval"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/listitem_subway_station_transfer"
+            tools:itemCount="2"
+            app:submitList="@{viewModel.subwayStationRoute.valueOnSet.toIntervals()}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/textView_subwayStationRouteTitle"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintEnd_toEndOf="@id/guideline_end"
+            android:layout_marginTop="30dp"/>
+
+        <TextView
+            android:id="@+id/textView_subwayStationDepartureCircle"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:text="@string/subway_station_departure"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:gravity="center"
+            android:background="@drawable/shape_circle_ffffff"
+            app:backgroundTint="@color/black_500"
+            app:layout_constraintTop_toBottomOf="@id/recyclerView_subwayStationInterval"
+            app:layout_constraintStart_toStartOf="@id/guideline_start" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_subwayStation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:isVisible="@{viewModel.subwayStationRoute.isSet}"
+            app:constraint_referenced_ids="
+            textView_titleNextSubwayStation,
+            layout_subwayStationLocation,
+            textView_lastUpdatedAt,
+            imageView_update,
+            subwayStationInformation_distanceToNextSubwayStation,
+            subwayStationInformation_remainingSubwayStations,
+            textView_subwayStationRouteTitle,
+            recyclerView_subwayStationInterval,
+            textView_subwayStationDepartureCircle" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_get_notification"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:isActivated="@{!viewModel.subwayStationRoute.isSet}"
+            android:text="@{viewModel.subwayStationRoute.isSet ? @string/is_notificating_subway_station_location : @string/get_notification_subway_station_location}"
+            tools:text="@string/get_notification_subway_station_location"
+            android:textSize="@dimen/text_size_middle"
+            tools:textColor="@color/text_color_positive"
+            android:paddingVertical="8dp"
+            tools:background="@color/button_background_positive"
+            android:onClick="@{(_) -> viewModel.moveToSetRouteFragment()}"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintEnd_toEndOf="@id/guideline_end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="30dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

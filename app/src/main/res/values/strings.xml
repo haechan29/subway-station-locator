@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">SubwayStationLocator</string>
+
+    <string name="empty_string"/>
+
+    <string name="unreachable_exception">발생할 수 없는 예외</string>
+
+    <string name="is_notificating_subway_station_location">지하철 위치 안내 중</string>
+    <string name="get_notification_subway_station_location">지하철 위치 안내받기</string>
+
+    <string name="current_time">%s 기준</string>
+
+    <string name="distance_to_next_subway_station">다음 역까지 거리</string>
+    <string name="remaining_subway_stations">남은 정거장 수</string>
+
+    <string name="distance_in_meter">%,d m</string>
+    <string name="subway_station_count">%d 정거장</string>
+
+    <string name="departure_subway_station">출발역</string>
+    <string name="arrival_subway_station">도착역</string>
+    <string name="gone_subway_station">-</string>
+
+    <string name="subway_station_orientation">%s 방면</string>
+    <string name="subway_station_departure">도착</string>
+
+    <string name="subway_station_id_not_set">출발역/도착역이 선택되지 않았습니다.</string>
+    <string name="line_number_not_set">지하철 호선이 설정되지 않았습니다.</string>
+    <string name="location_not_available">현재 위치를 파악할 수 없습니다.</string>
+    <string name="no_subway_station_nearby_1000">1km 이내에서 지하철역을 찾을 수 없습니다.</string>
+
+    <string name="failed_to_get_subway_station_information">지하철 정보를 가져오지 못했습니다.</string>
+
+    <string name="departure_subway_station_not_set">출발역이 설정되지 않았습니다.</string>
+    <string name="arrival_subway_station_not_set">도착역이 설정되지 않았습니다.</string>
+
+    <string name="failed_to_set_destination_subway_station">경로를 추가하지 못했습니다.</string>
+
+    <string name="permission_name_in_korean_fine_location">위치</string>
+    <string name="permission_name_in_korean_coarse_location">위치</string>
+    <string name="permission_name_in_korean_post_notification">알림</string>
+
+    <string name="permission_not_granted">%s 권한이 허용되지 않았습니다.</string>
+
+    <string name="main_title_next_subway_station">곧 도착할 역</string>
+    <string name="main_title_subway_station_route">나의 이동 경로</string>
+</resources>

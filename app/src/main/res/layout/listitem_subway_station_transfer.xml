@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewHolder"
+            type="com.hc.subway_station_locator.presentation.view.SubwayStationIntervalAdapter.SubwayTransferViewHolder" />
+
+        <variable
+            name="subwayStationTransfer"
+            type="com.hc.subway_station_locator.domain.model.SubwayStationTransferVO" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout_subwayStationTransfer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{(_) -> viewHolder.toggleFoldState(subwayStationTransfer)}"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="30dp" />
+
+        <TextView
+            android:id="@+id/textView_subwayStationLineNumber"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:text="@{subwayStationTransfer.lineNumber.substring(0, 2)}"
+            tools:text="4"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:gravity="center"
+            android:background="@drawable/shape_circle_ffffff"
+            app:backgroundTint="@{subwayStationTransfer.lineNumberColor}"
+            tools:backgroundTint="#FF00A5DE"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/view_subwayStationLine"
+            android:layout_width="8dp"
+            android:layout_height="32dp"
+            app:background="@{subwayStationTransfer.lineNumberColor}"
+            tools:background="#FF00A5DE"
+            app:layout_constraintTop_toBottomOf="@id/textView_subwayStationLineNumber"
+            app:layout_constraintStart_toStartOf="@id/textView_subwayStationLineNumber"
+            app:layout_constraintEnd_toEndOf="@id/textView_subwayStationLineNumber"
+            android:layout_marginTop="-2dp" />
+
+        <TextView
+            android:id="@+id/textView_subwayStationName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{subwayStationTransfer.subwayStation.name}"
+            tools:text="동대문역사문화공원역"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/textView_subwayStationLineNumber"
+            app:layout_constraintBottom_toBottomOf="@id/textView_subwayStationLineNumber"
+            app:layout_constraintStart_toStartOf="@id/guideline_start" />
+
+        <TextView
+            android:id="@+id/textView_subwayStationOrientation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{@string/subway_station_orientation(subwayStationTransfer.orientation)}"
+            tools:text="서울역 방면"
+            android:textColor="@color/black_500"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/textView_subwayStationName"
+            app:layout_constraintStart_toStartOf="@id/guideline_start" />
+
+        <View
+            android:id="@+id/view_subwayStationDivider"
+            android:layout_width="3dp"
+            android:layout_height="3dp"
+            android:background="@drawable/shape_divider_circle_000000"
+            android:backgroundTint="@color/black_500"
+            app:layout_constraintTop_toTopOf="@id/textView_subwayStationOrientation"
+            app:layout_constraintBottom_toBottomOf="@id/textView_subwayStationOrientation"
+            app:layout_constraintStart_toEndOf="@id/textView_subwayStationOrientation"
+            android:layout_marginStart="4dp"/>
+
+        <TextView
+            android:id="@+id/textView_subwayStationRemainingSubwayStations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{@string/subway_station_count(subwayStationTransfer.subwayStationMiddles.size + 1)}"
+            tools:text="4정거장"
+            android:textColor="@color/black_500"
+            android:textSize="12sp"
+            app:layout_constraintTop_toTopOf="@id/view_subwayStationDivider"
+            app:layout_constraintBottom_toBottomOf="@id/view_subwayStationDivider"
+            app:layout_constraintStart_toEndOf="@id/view_subwayStationDivider"
+            android:layout_marginStart="4dp"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageView_subwayStationRemainingSubwayStations"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:background="@{subwayStationTransfer.isFolded ? @drawable/ic_arrow_drop_up_24px : @drawable/ic_arrow_drop_down_24px}"
+            tools:background="@drawable/ic_arrow_drop_up_24px"
+            android:backgroundTint="@color/black_500"
+            app:layout_constraintTop_toTopOf="@id/textView_subwayStationRemainingSubwayStations"
+            app:layout_constraintBottom_toBottomOf="@id/textView_subwayStationRemainingSubwayStations"
+            app:layout_constraintStart_toEndOf="@id/textView_subwayStationRemainingSubwayStations"
+            android:layout_marginStart="2dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

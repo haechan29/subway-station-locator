@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="subwayStation"
+            type="com.hc.subway_station_locator.domain.model.SubwayStationVO" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/textView_subwayStationName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{subwayStation.name}"
+            tools:text="성수역"
+            android:textSize="@dimen/text_size_middle"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginVertical="12dp"
+            android:layout_marginStart="8dp"/>
+
+        <TextView
+            android:id="@+id/textView_subwayStationLineNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{subwayStation.lineNumber}"
+            tools:text="2호선"
+            android:textSize="@dimen/text_size_small"
+            android:textColor="@color/black_500"
+            app:layout_constraintBottom_toBottomOf="@id/textView_subwayStationName"
+            app:layout_constraintStart_toEndOf="@id/textView_subwayStationName"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:dividerColor="@color/black_200"
+            app:dividerThickness="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

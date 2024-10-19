@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="onFoldedStateChanged"
+            type="boolean" />
+
+        <variable
+            name="subwayStationMiddle"
+            type="com.hc.subway_station_locator.domain.model.SubwayStationMiddleVO" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="30dp" />
+
+        <View
+            android:id="@+id/view_subwayStationLine"
+            android:layout_width="8dp"
+            android:layout_height="24dp"
+            app:background="@{subwayStationMiddle.lineNumberColor}"
+            tools:background="#FF00A5DE"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"/>
+
+        <View
+            android:id="@+id/textView_subwayStationCircle"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:background="@drawable/shape_circle_ffffff"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@id/view_subwayStationLine"
+            app:layout_constraintEnd_toEndOf="@id/view_subwayStationLine"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:id="@+id/textView_subwayStationName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{subwayStationMiddle.subwayStation.name}"
+            tools:text="충무로역"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:layout_constraintTop_toTopOf="@id/textView_subwayStationCircle"
+            app:layout_constraintBottom_toBottomOf="@id/textView_subwayStationCircle"
+            app:layout_constraintStart_toStartOf="@id/guideline_start" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

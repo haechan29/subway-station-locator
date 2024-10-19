@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black_100">#11000000</color>
+    <color name="black_200">#22000000</color>
+    <color name="black_400">#66000000</color>
+    <color name="black_500">#88000000</color>
+    <color name="black_700">#aa000000</color>
+
+    <color name="black">#ff000000</color>
+    <color name="white">#ffffffff</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="button_background_positive">#ff0080ff</color>
+    <color name="button_background_negative">#22000000</color>
+
+    <color name="text_color_positive">#ffffffff</color>
+    <color name="text_color_negative">#99000000</color>
+
+    <color name="subway_staion_line_number_color_line_1">#ff0052a4</color>
+    <color name="subway_staion_line_number_color_line_2">#ff00a84d</color>
+    <color name="subway_staion_line_number_color_line_3">#ffef7c1c</color>
+    <color name="subway_staion_line_number_color_line_4">#ff00a5de</color>
+    <color name="subway_staion_line_number_color_line_5">#ff996cac</color>
+    <color name="subway_staion_line_number_color_line_6">#ffcd7c2f</color>
+    <color name="subway_staion_line_number_color_line_7">#ff747f00</color>
+    <color name="subway_staion_line_number_color_line_8">#ffe6186c</color>
+    <color name="subway_staion_line_number_color_line_9">#ffbdb092</color>
+    <color name="subway_staion_line_number_color_line_gyenggang">#ff003da5</color>
+    <color name="subway_staion_line_number_color_line_gyeongui">#ff77c4a3</color>
+    <color name="subway_staion_line_number_color_line_gyeongchun">#ff0c8e72</color>
+    <color name="subway_staion_line_number_color_line_airport_railload_express">#ff0065B3</color>
+    <color name="subway_staion_line_number_color_line_gimpo_gold">#ffa17800</color>
+    <color name="subway_staion_line_number_color_line_seohae">#ff81a914</color>
+    <color name="subway_staion_line_number_color_line_suin_bundang">#ffF5a200</color>
+    <color name="subway_staion_line_number_color_line_shin_bundang">#ffd4003b</color>
+    <color name="subway_staion_line_number_color_line_lrt_yongin">#ff509f22</color>
+    <color name="subway_staion_line_number_color_line_lrt_sinseol">#ffb7c452</color>
+    <color name="subway_staion_line_number_color_line_lrt_uijeongbu">#fffca600</color>
+    <color name="subway_staion_line_number_color_line_incheon">#ff7ca8d5</color>
+    <color name="subway_staion_line_number_color_line_incheon_2">#ffed8B00</color>
+</resources>
