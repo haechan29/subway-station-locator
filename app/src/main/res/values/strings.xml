@@ -43,4 +43,7 @@
 
     <string name="main_title_next_subway_station">곧 도착할 역</string>
     <string name="main_title_subway_station_route">나의 이동 경로</string>
+
+    <string name="subway_station_location_before_destination">아직 출발 전입니다.</string>
+    <string name="subway_station_location_after_arrival">도착역을 지났습니다.</string>
 </resources>

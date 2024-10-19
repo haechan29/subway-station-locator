@@ -13,10 +13,10 @@ import com.hc.subway_station_locator.domain.model.NearbySubwayStationsVO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 
 class MainViewModel: BaseViewModel() {
@@ -33,15 +33,21 @@ class MainViewModel: BaseViewModel() {
     val departureSubwayStation = MutableStateFlow<BaseState<SubwayStationVO>>(BaseState.Unset)
     val arrivalSubwayStation = MutableStateFlow<BaseState<SubwayStationVO>>(BaseState.Unset)
 
-    private val _subwayStationRoute = MutableStateFlow<BaseState<SubwayStationRouteVO>>(BaseState.Unset)
-    val subwayStationRoute get() = _subwayStationRoute.asStateFlow()
+    val subwayStationRoute = departureSubwayStation.mapNotNull { it.valueOnSet }.combine(arrivalSubwayStation.mapNotNull { it.valueOnSet }) { departureSubwayStation, arrivalSubwayStation -> BaseState.Set(SubwayStationRouteVO(SubwayStationUtils.getShortestSubwayStationRoute(departureSubwayStation, arrivalSubwayStation))) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), BaseState.Unset)
+
+    private val _subwayStationIndex = MutableStateFlow<BaseState<Int>>(BaseState.Unset)
+    val subwayStationIndex get() = _subwayStationIndex.asStateFlow()
+
+    val currentSubwayStation = subwayStationRoute.mapNotNull { it.valueOnSet }.combine(subwayStationIndex.mapNotNull { it.valueOnSet }) { subwayStationRoute, subwayStationIndex -> if (subwayStationIndex in subwayStationRoute.subwayStationRoute.indices) subwayStationRoute.subwayStationRoute[subwayStationIndex] else null }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+    val previousSubwayStation = subwayStationRoute.mapNotNull { it.valueOnSet }.combine(subwayStationIndex.mapNotNull { it.valueOnSet }) { subwayStationRoute, subwayStationIndex -> if (subwayStationIndex == 0) { null } else { if (subwayStationIndex in subwayStationRoute.subwayStationRoute.indices) subwayStationRoute.subwayStationRoute[subwayStationIndex - 1] else null } }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+    val nextSubwayStation = subwayStationRoute.mapNotNull { it.valueOnSet }.combine(subwayStationIndex.mapNotNull { it.valueOnSet }) { subwayStationRoute, subwayStationIndex -> if (subwayStationIndex == subwayStationRoute.subwayStationRoute.lastIndex) { null } else { if (subwayStationIndex in subwayStationRoute.subwayStationRoute.indices) subwayStationRoute.subwayStationRoute[subwayStationIndex + 1] else null } }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     val subwayStationSearchText = MutableStateFlow<BaseState<String>>(BaseState.Unset)
 
     val searchSubwaySearchResult = subwayStationSearchText.map { getSubwayStationSearchResult(it.valueOnSet) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), BaseState.Unset)
 
     init {
-        fetchSubwayStationRouteState()
+        collectSubwayStationRoute()
     }
 
     fun startForegroundService() {
@@ -50,18 +56,17 @@ class MainViewModel: BaseViewModel() {
     }
 
     fun seePreviousSubwayStation() {
-        if (!subwayStationRoute.value.isSet) return
-
-        setState (_subwayStationRoute) {
-            BaseState.Set(valueOnSet!!.decreaseSubwayStationIndex())
+        setState (_subwayStationIndex) {
+            BaseState.Set((valueOnSet!! - 1).coerceAtLeast(0))
         }
     }
 
     fun seeNextSubwayStation() {
-        if (!subwayStationRoute.value.isSet) return
 
-        setState (_subwayStationRoute) {
-            BaseState.Set(valueOnSet!!.increaseSubwayStationIndex())
+        val subwayStationRoute = subwayStationRoute.value.valueOnSet?.subwayStationRoute ?: return
+
+        setState (_subwayStationIndex) {
+            BaseState.Set((valueOnSet!! + 1).coerceAtMost(subwayStationRoute.lastIndex))
         }
     }
 
@@ -106,6 +111,15 @@ class MainViewModel: BaseViewModel() {
 
     fun fetchCurrentLocation() {
         setEffect { MainEffect.FetchCurrentLocation }
+    }
+
+    private fun collectSubwayStationRoute() {
+
+        viewModelScope.launch {
+            subwayStationRoute.mapNotNull { it.valueOnSet }.collect {
+                setState(_subwayStationIndex) { getIndexOfNextSubwayStation(it.subwayStationRoute).toState() }
+            }
+        }
     }
 
     private fun getCurrentNearbySubwayStations(currentLocation: BaseState<LocationVO>): BaseState<NearbySubwayStationsVO> {
@@ -193,27 +207,33 @@ class MainViewModel: BaseViewModel() {
         setEffect { MainEffect.OnBackPressed }
     }
 
-    private fun fetchSubwayStationRouteState() {
-        viewModelScope.launch {
-            val subwayStationRoute = departureSubwayStation.filter { it.isSet }.zip(arrivalSubwayStation.filter { it.isSet }) { departureSubwayStation, arrivalSubwayStation ->
-                SubwayStationUtils.getShortestSubwayStationRoute(departureSubwayStation.valueOnSet!!, arrivalSubwayStation.valueOnSet!!)
+    private fun getIndexOfNextSubwayStation(subwayStationRoute: List<SubwayStationVO>): Result<Int> {
+
+        return runCatching {
+
+            val currentLocation = LocationUtils.currentLocation.value ?: throw Exception("위치가 설정되지 않았습니다.")
+
+            val currentNearbySubwayStations = SubwayStationUtils.getNearbySubwayStation(currentLocation, subwayStationRoute)
+
+            if (currentNearbySubwayStations[0] == subwayStationRoute[0]) {
+                val distanceFromNextSubwayStation = LocationUtils.getDistanceBetween(currentLocation.latitude, currentLocation.longitude, subwayStationRoute[1].latitude, subwayStationRoute[1].longitude)
+                val distanceBetweenDepartureSubwayStationAndNextSubwayStation = LocationUtils.getDistanceBetween(subwayStationRoute[0].latitude, subwayStationRoute[0].longitude, subwayStationRoute[1].latitude, subwayStationRoute[1].longitude)
+
+                if (distanceFromNextSubwayStation > distanceBetweenDepartureSubwayStationAndNextSubwayStation) {
+                    return@runCatching -1
+                }
+            } else if (currentNearbySubwayStations[1] == subwayStationRoute.last()) {
+                val distanceFromPreviousSubwayStation = LocationUtils.getDistanceBetween(currentLocation.latitude, currentLocation.longitude, subwayStationRoute[subwayStationRoute.lastIndex - 1].latitude, subwayStationRoute[subwayStationRoute.lastIndex - 1].longitude)
+                val distanceBetweenArrivalSubwayStationAndPreviousSubwayStation = LocationUtils.getDistanceBetween(subwayStationRoute.last().latitude, subwayStationRoute.last().longitude, subwayStationRoute[subwayStationRoute.lastIndex - 1].latitude, subwayStationRoute[subwayStationRoute.lastIndex - 1].longitude)
+
+                if (distanceFromPreviousSubwayStation > distanceBetweenArrivalSubwayStationAndPreviousSubwayStation) {
+                    return@runCatching -2
+                }
             }
 
-            subwayStationRoute.collect {
-                setState(_subwayStationRoute) { getSubwayStationRouteState(it) }
-            }
+            currentNearbySubwayStations
+                .let { nearbySubwayStations -> nearbySubwayStations[1] }
+                .let { closestSubwayStation -> subwayStationRoute.indexOf(closestSubwayStation) }
         }
-
-    }
-
-    private fun getSubwayStationRouteState(subwayStationRoute: List<SubwayStationVO>): BaseState<SubwayStationRouteVO> {
-        val currentLocation = LocationUtils.currentLocation.value ?: return SubwayStationRouteState.LocationNotAvailableFail
-
-        val nextSubwayStationIndex = SubwayStationUtils.getNearbySubwayStation(currentLocation, subwayStationRoute)
-            .ifEmpty { return SubwayStationRouteState.NoSubwayStationRouteNearby }
-            .let { nearbySubwayStations -> nearbySubwayStations[1] }
-            .let { closestSubwayStation -> subwayStationRoute.indexOf(closestSubwayStation) }
-
-        return BaseState.Set(SubwayStationRouteVO(subwayStationRoute, nextSubwayStationIndex))
     }
 }

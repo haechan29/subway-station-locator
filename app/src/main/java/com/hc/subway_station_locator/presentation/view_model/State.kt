@@ -16,6 +16,10 @@ sealed class BaseState<out T>: State<T> {
 
     class Set<T>(val value: T): BaseState<T>()
     data object Unset: BaseState<Nothing>()
+
+    fun <T> Result<T>.toState(): BaseState<T> {
+        return this.mapCatching { Set(it) }.getOrDefault(Unset)
+    }
 }
 
 sealed class SubwayStationRouteState: BaseState<SubwayStationRouteVO>() {

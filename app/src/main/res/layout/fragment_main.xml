@@ -70,20 +70,46 @@
             android:layout_height="wrap_content"
             layout="@layout/layout_subway_station_location"
             app:viewModel="@{viewModel}"
+            app:isVisible="@{viewModel.subwayStationIndex.valueOnSet >= 0}"
             app:layout_constraintTop_toBottomOf="@id/textView_titleNextSubwayStation"
             app:layout_constraintStart_toStartOf="@id/guideline_start"
             app:layout_constraintEnd_toEndOf="@id/guideline_end"
             android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/textView_subwayStationLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.subwayStationIndex.valueOnSet == -1 ? @string/subway_station_location_before_destination : @string/subway_station_location_after_arrival}"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            app:isVisible="@{viewModel.subwayStationIndex.valueOnSet &lt; 0}"
+            tools:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/textView_titleNextSubwayStation"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            android:layout_marginTop="20dp" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_subwayStationLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:barrierAllowsGoneWidgets="true"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="layout_subwayStationLocation, textView_subwayStationLocation"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintEnd_toEndOf="@id/guideline_end"/>
 
         <include
             android:id="@+id/subwayStationInformation_distanceToNextSubwayStation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             layout="@layout/layout_subway_station_information"
+            app:isVisible="@{viewModel.subwayStationIndex.valueOnSet >= 0}"
             app:subwayStationInformationTitle="@{@string/distance_to_next_subway_station}"
             app:subwayStationInformationContent="@{@string/distance_in_meter(viewModel.distanceFromNextSubwayStation.valueOnSet)}"
             tools:subwayStationInformationContent="12,345m"
-            app:layout_constraintTop_toBottomOf="@id/layout_subwayStationLocation"
+            app:layout_constraintTop_toBottomOf="@id/barrier_subwayStationLocation"
             app:layout_constraintStart_toStartOf="@id/guideline_start"
             app:layout_constraintEnd_toStartOf="@id/subwayStationInformation_remainingSubwayStations"
             android:layout_marginTop="30dp"
@@ -94,6 +120,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             layout="@layout/layout_subway_station_information"
+            app:isVisible="@{viewModel.subwayStationIndex.valueOnSet >= 0}"
             app:subwayStationInformationTitle="@{@string/remaining_subway_stations}"
             app:subwayStationInformationContent="@{viewModel.remainingSubwayStations.isSet ? @string/subway_station_count(viewModel.remainingSubwayStations.valueOnSet) : null}"
             app:layout_constraintTop_toTopOf="@id/subwayStationInformation_distanceToNextSubwayStation"
