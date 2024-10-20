@@ -10,6 +10,11 @@ import com.hc.subway_station_locator.domain.usecase.InsertSubwayStationUseCase
 import com.hc.subway_station_locator.app.utils.LocationUtils
 import com.hc.subway_station_locator.app.utils.SubwayStationUtils
 import com.hc.subway_station_locator.domain.model.NearbySubwayStationsVO
+import com.hc.subway_station_locator.domain.model.SubwayStationArrivalVO
+import com.hc.subway_station_locator.domain.model.SubwayStationInterval
+import com.hc.subway_station_locator.domain.model.SubwayStationMiddleVO
+import com.hc.subway_station_locator.domain.model.SubwayStationTransferVO
+import com.hc.subway_station_locator.presentation.view_model.BaseState.Unset.toState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel: BaseViewModel() {
@@ -33,7 +39,9 @@ class MainViewModel: BaseViewModel() {
     val departureSubwayStation = MutableStateFlow<BaseState<SubwayStationVO>>(BaseState.Unset)
     val arrivalSubwayStation = MutableStateFlow<BaseState<SubwayStationVO>>(BaseState.Unset)
 
-    val subwayStationRoute = departureSubwayStation.mapNotNull { it.valueOnSet }.combine(arrivalSubwayStation.mapNotNull { it.valueOnSet }) { departureSubwayStation, arrivalSubwayStation -> BaseState.Set(SubwayStationRouteVO(SubwayStationUtils.getShortestSubwayStationRoute(departureSubwayStation, arrivalSubwayStation))) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), BaseState.Unset)
+    private val subwayStationRoute = departureSubwayStation.mapNotNull { it.valueOnSet }.combine(arrivalSubwayStation.mapNotNull { it.valueOnSet }) { departureSubwayStation, arrivalSubwayStation -> BaseState.Set(SubwayStationRouteVO(SubwayStationUtils.getShortestSubwayStationRoute(departureSubwayStation, arrivalSubwayStation))) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), BaseState.Unset)
+
+    val subwayStationIntervals = combine(subwayStationRoute.mapNotNull { it.valueOnSet }, currentNearbySubwayStations.mapNotNull { it.valueOnSet }) { subwayStationRoute, currentNearbySubwayStations -> getSubwayStationIntervals(subwayStationRoute, currentNearbySubwayStations) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     private val _subwayStationIndex = MutableStateFlow<BaseState<Int>>(BaseState.Unset)
     val subwayStationIndex get() = _subwayStationIndex.asStateFlow()
@@ -205,6 +213,31 @@ class MainViewModel: BaseViewModel() {
         setState(subwayStationSearchText) { BaseState.Unset }
 
         setEffect { MainEffect.OnBackPressed }
+    }
+
+    private fun getSubwayStationIntervals(subwayStationRouteVO: SubwayStationRouteVO, currentNearbySubwayStations: NearbySubwayStationsVO): List<SubwayStationInterval> {
+
+        val subwayStationRoute = subwayStationRouteVO.subwayStationRoute
+
+        val indicesOfSubwayStationTransfer = subwayStationRoute.indices
+            .filter { i -> i ==  0 || i == subwayStationRoute.lastIndex || subwayStationRoute[i].lineNumber != subwayStationRoute[i + 1].lineNumber }
+
+        return (0 .. subwayStationRoute.lastIndex).map { i ->
+            when (i) {
+                subwayStationRoute.lastIndex -> SubwayStationArrivalVO(subwayStationRoute[i], currentNearbySubwayStations.previousSubwayStation == subwayStationRoute[i])
+                in indicesOfSubwayStationTransfer -> SubwayStationTransferVO(
+                    subwayStationRoute[i],
+                    currentNearbySubwayStations.previousSubwayStation == subwayStationRoute[i],
+                    subwayStationRoute[i + 1].name,
+                    subwayStationRoute[i + 1].lineNumber,
+                    (i + 1 until indicesOfSubwayStationTransfer.first { it > i })
+                )
+                else -> SubwayStationMiddleVO(
+                    subwayStationRoute[i],
+                    currentNearbySubwayStations.previousSubwayStation == subwayStationRoute[i]
+                )
+            }
+        }
     }
 
     private fun getIndexOfNextSubwayStation(subwayStationRoute: List<SubwayStationVO>): Result<Int> {

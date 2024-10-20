@@ -14,8 +14,12 @@ sealed class BaseState<out T>: State<T> {
     override val isSet get() = this is Set<*>
     val valueOnSet get() = if (isSet) (this as Set<T>).value else null
 
-    class Set<T>(val value: T): BaseState<T>()
+    data class Set<T>(val value: T): BaseState<T>()
     data object Unset: BaseState<Nothing>()
+
+    override fun equals(other: Any?): Boolean {
+        return (this == Unset && other == Unset).or(this is Set && other is Set<*> && this.value == other.value)
+    }
 
     fun <T> Result<T>.toState(): BaseState<T> {
         return this.mapCatching { Set(it) }.getOrDefault(Unset)

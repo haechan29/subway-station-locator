@@ -6,6 +6,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hc.subway_station_locator.app.utils.Utils.size
 import com.hc.subway_station_locator.databinding.ListitemSubwayStationArrivalBinding
 import com.hc.subway_station_locator.databinding.ListitemSubwayStationMiddleBinding
 import com.hc.subway_station_locator.databinding.ListitemSubwayStationTransferBinding
@@ -35,6 +36,8 @@ class SubwayStationIntervalAdapter: ListAdapter<SubwayStationInterval, SubwaySta
         private const val VIEW_TYPE_SUBWAY_STATION_ARRIVAL = 2
     }
 
+    private val holder = mutableMapOf<String, List<SubwayStationInterval>>()
+
     sealed class ViewHolder(binding: ViewDataBinding): RecyclerView.ViewHolder(binding.root)
 
     inner class SubwayStationTransferViewHolder(private val binding: ListitemSubwayStationTransferBinding): ViewHolder(binding) {
@@ -44,41 +47,28 @@ class SubwayStationIntervalAdapter: ListAdapter<SubwayStationInterval, SubwaySta
         }
 
         fun toggleFoldState(subwayStationTransfer: SubwayStationTransferVO) {
-            if (job != null) return
 
-            job = scope.launch {
-                if (subwayStationTransfer.isFolded) {
-                    unfoldInterval(subwayStationTransfer)
-                } else {
-                    foldInterval(subwayStationTransfer)
+            subwayStationTransfer.toggleFoldState()
+
+            val mutableList = currentList.toMutableList()
+
+            if (holder[subwayStationTransfer.subwayStation.frCode] == null) {
+
+                holder[subwayStationTransfer.subwayStation.frCode] = (0 until subwayStationTransfer.indicesOfSubwayStationMiddle.size).map {
+                    mutableList.removeAt(adapterPosition + 1)
+                }
+            } else {
+
+                holder[subwayStationTransfer.subwayStation.frCode]!!.reversed().forEach {
+                    mutableList.add(adapterPosition + 1, it)
                 }
 
-                subwayStationTransfer.isFolded = !subwayStationTransfer.isFolded
-
-                job = null
+                holder.remove(subwayStationTransfer.subwayStation.frCode)
             }
-        }
 
-        private suspend fun foldInterval(subwayStationTransfer: SubwayStationTransferVO) {
-            (adapterPosition + 1 .. adapterPosition + subwayStationTransfer.subwayStationMiddles.size)
-                .reversed()
-                .onEach { i ->
-                    submitList(currentList.toMutableList().apply { removeAt(i) })
-                    notifyItemRemoved(i)
+            submitList(mutableList)
 
-                    delay(0.05.seconds)
-                }
-        }
-
-        private suspend fun unfoldInterval(subwayStationTransfer: SubwayStationTransferVO) {
-            subwayStationTransfer.subwayStationMiddles
-                .map { subwayStationMiddle -> SubwayStationMiddleVO(subwayStationMiddle) }
-                .forEachIndexed { i, subwayStation ->
-                    submitList(currentList.toMutableList().apply { add(adapterPosition + i + 1, subwayStation) })
-                    notifyItemInserted(adapterPosition + i + 1)
-
-                    delay(0.05.seconds)
-                }
+            notifyItemRangeChanged(adapterPosition, adapterPosition + subwayStationTransfer.indicesOfSubwayStationMiddle.size)
         }
     }
 
@@ -93,9 +83,6 @@ class SubwayStationIntervalAdapter: ListAdapter<SubwayStationInterval, SubwaySta
             binding.subwayStationArrival = subwayStationArrival
         }
     }
-
-    private val scope = MainScope()
-    private var job: Job? = null
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {

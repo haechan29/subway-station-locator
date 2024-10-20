@@ -47,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/shape_r100_s2_b_ffffff"
-            android:text="@{viewModel.subwayStationRoute.isSet ? viewModel.currentSubwayStation.name : @string/empty_string}"
+            android:text="@{viewModel.subwayStationIntervals != null ? viewModel.currentSubwayStation.name : @string/empty_string}"
             tools:text="성수역"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_large"
@@ -83,16 +83,21 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/textView_previousSubwayStation"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.previousSubwayStation.name ?? @string/departure_subway_station}"
                 tools:text="뚝섬역"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_small"
+                android:gravity="start"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/imageView_previousSubwayStation"
-                android:layout_marginStart="2dp" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="10dp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -113,7 +118,7 @@
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/ic_arrow_forward_24px"
                 android:backgroundTint="@color/white"
-                app:isInvisible="@{viewModel.subwayStationIndex.valueOnSet == viewModel.subwayStationRoute.valueOnSet.subwayStationRoute.size() - 1}"
+                app:isInvisible="@{viewModel.subwayStationIndex.valueOnSet == viewModel.subwayStationIntervals.size() - 1}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -121,15 +126,20 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/textView_nextSubwayStation"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.nextSubwayStation.name ?? @string/arrival_subway_station}"
                 tools:text="건대입구역"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_small"
+                android:gravity="end"
+                android:maxLines="1"
+                android:ellipsize="end"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/imageView_nextSubwayStation"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="2dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

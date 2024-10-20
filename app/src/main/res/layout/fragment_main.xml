@@ -144,21 +144,23 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_subwayStationInterval"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             tools:listitem="@layout/listitem_subway_station_transfer"
             tools:itemCount="2"
-            app:submitList="@{viewModel.subwayStationRoute.valueOnSet.toIntervals()}"
+            app:submitList="@{viewModel.subwayStationIntervals}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@id/textView_subwayStationRouteTitle"
+            app:layout_constraintBottom_toTopOf="@id/button_get_notification"
             app:layout_constraintStart_toStartOf="@id/guideline_start"
             app:layout_constraintEnd_toEndOf="@id/guideline_end"
-            android:layout_marginTop="30dp"/>
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="10dp"/>
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/group_subwayStation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:isVisible="@{viewModel.subwayStationRoute.isSet}"
+            app:isVisible="@{viewModel.subwayStationIntervals != null}"
             app:constraint_referenced_ids="
             textView_titleNextSubwayStation,
             layout_subwayStationLocation,
@@ -173,8 +175,8 @@
             android:id="@+id/button_get_notification"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:isActivated="@{!viewModel.subwayStationRoute.isSet}"
-            android:text="@{viewModel.subwayStationRoute.isSet ? @string/is_notificating_subway_station_location : @string/get_notification_subway_station_location}"
+            app:isActivated="@{viewModel.subwayStationIntervals == null}"
+            android:text="@{viewModel.subwayStationIntervals != null ? @string/is_notificating_subway_station_location : @string/get_notification_subway_station_location}"
             tools:text="@string/get_notification_subway_station_location"
             android:textSize="@dimen/text_size_middle"
             tools:textColor="@color/text_color_positive"

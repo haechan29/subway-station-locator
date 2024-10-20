@@ -95,7 +95,7 @@
             android:id="@+id/textView_subwayStationRemainingSubwayStations"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{@string/subway_station_count(subwayStationTransfer.subwayStationMiddles.size + 1)}"
+            android:text="@{@string/subway_station_count(subwayStationTransfer.indicesOfSubwayStationMiddle.last - subwayStationTransfer.indicesOfSubwayStationMiddle.start + 1)}"
             tools:text="4정거장"
             android:textColor="@color/black_500"
             android:textSize="12sp"
