@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="subwayStationArrival"
+            type="com.hc.subway_station_locator.domain.model.SubwayStationArrivalVO" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout_subwayStationTransfer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="30dp" />
+
+        <TextView
+            android:id="@+id/textView_subwayStationLineNumber"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:text="@string/subway_station_departure"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:gravity="center"
+            android:background="@drawable/shape_circle_ffffff"
+            app:backgroundTint="@color/black_500"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textView_subwayStationName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{subwayStationArrival.subwayStation.name}"
+            tools:text="동대문역사문화공원역"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/textView_subwayStationLineNumber"
+            app:layout_constraintBottom_toBottomOf="@id/textView_subwayStationLineNumber"
+            app:layout_constraintStart_toStartOf="@id/guideline_start" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

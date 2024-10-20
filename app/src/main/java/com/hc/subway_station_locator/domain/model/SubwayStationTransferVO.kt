@@ -8,7 +8,6 @@ data class SubwayStationTransferVO(
     val lineNumber: String,
     val subwayStationMiddles: List<SubwayStationVO>,
     var isFolded: Boolean = false
-
 ): SubwayStationInterval(subwayStation) {
 
     val lineNumberColor get() = SubwayStationUtils.getSubwayStationLineNumberColor(lineNumber)

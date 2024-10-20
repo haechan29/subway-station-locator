@@ -6,8 +6,10 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hc.subway_station_locator.databinding.ListitemSubwayStationArrivalBinding
 import com.hc.subway_station_locator.databinding.ListitemSubwayStationMiddleBinding
 import com.hc.subway_station_locator.databinding.ListitemSubwayStationTransferBinding
+import com.hc.subway_station_locator.domain.model.SubwayStationArrivalVO
 import com.hc.subway_station_locator.domain.model.SubwayStationInterval
 import com.hc.subway_station_locator.domain.model.SubwayStationMiddleVO
 import com.hc.subway_station_locator.domain.model.SubwayStationTransferVO
@@ -15,7 +17,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
 
 class SubwayStationIntervalAdapter: ListAdapter<SubwayStationInterval, SubwayStationIntervalAdapter.ViewHolder>(object: DiffUtil.ItemCallback<SubwayStationInterval>() {
@@ -31,14 +32,15 @@ class SubwayStationIntervalAdapter: ListAdapter<SubwayStationInterval, SubwaySta
     companion object {
         private const val VIEW_TYPE_SUBWAY_STATION_TRANSFER = 0
         private const val VIEW_TYPE_SUBWAY_STATION_MIDDLE = 1
+        private const val VIEW_TYPE_SUBWAY_STATION_ARRIVAL = 2
     }
 
     sealed class ViewHolder(binding: ViewDataBinding): RecyclerView.ViewHolder(binding.root)
 
-    inner class SubwayTransferViewHolder(private val binding: ListitemSubwayStationTransferBinding): ViewHolder(binding) {
+    inner class SubwayStationTransferViewHolder(private val binding: ListitemSubwayStationTransferBinding): ViewHolder(binding) {
         fun bind(subwayStationTransfer: SubwayStationTransferVO) {
             binding.subwayStationTransfer = subwayStationTransfer
-            binding.viewHolder = this@SubwayTransferViewHolder
+            binding.viewHolder = this@SubwayStationTransferViewHolder
         }
 
         fun toggleFoldState(subwayStationTransfer: SubwayStationTransferVO) {
@@ -80,9 +82,15 @@ class SubwayStationIntervalAdapter: ListAdapter<SubwayStationInterval, SubwaySta
         }
     }
 
-    inner class SubwayMiddleViewHolder(private val binding: ListitemSubwayStationMiddleBinding): ViewHolder(binding) {
+    inner class SubwayStationMiddleViewHolder(private val binding: ListitemSubwayStationMiddleBinding): ViewHolder(binding) {
         fun bind(subwayStationMiddle: SubwayStationMiddleVO) {
             binding.subwayStationMiddle = subwayStationMiddle
+        }
+    }
+
+    inner class SubwayStationArrivalViewHolder(private val binding: ListitemSubwayStationArrivalBinding): ViewHolder(binding) {
+        fun bind(subwayStationArrival: SubwayStationArrivalVO) {
+            binding.subwayStationArrival = subwayStationArrival
         }
     }
 
@@ -93,24 +101,29 @@ class SubwayStationIntervalAdapter: ListAdapter<SubwayStationInterval, SubwaySta
         return when (getItem(position)) {
             is SubwayStationTransferVO -> VIEW_TYPE_SUBWAY_STATION_TRANSFER
             is SubwayStationMiddleVO -> VIEW_TYPE_SUBWAY_STATION_MIDDLE
+            is SubwayStationArrivalVO -> VIEW_TYPE_SUBWAY_STATION_ARRIVAL
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
-            VIEW_TYPE_SUBWAY_STATION_TRANSFER -> SubwayTransferViewHolder(
+            VIEW_TYPE_SUBWAY_STATION_TRANSFER -> SubwayStationTransferViewHolder(
                 ListitemSubwayStationTransferBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
-            else -> SubwayMiddleViewHolder(
+            VIEW_TYPE_SUBWAY_STATION_MIDDLE -> SubwayStationMiddleViewHolder(
                 ListitemSubwayStationMiddleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            )
+            else -> SubwayStationArrivalViewHolder(
+                ListitemSubwayStationArrivalBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
         }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
-            is SubwayTransferViewHolder -> holder.bind(getItem(position) as SubwayStationTransferVO)
-            is SubwayMiddleViewHolder -> holder.bind(getItem(position) as SubwayStationMiddleVO)
+            is SubwayStationTransferViewHolder -> holder.bind(getItem(position) as SubwayStationTransferVO)
+            is SubwayStationMiddleViewHolder -> holder.bind(getItem(position) as SubwayStationMiddleVO)
+            is SubwayStationArrivalViewHolder -> holder.bind(getItem(position) as SubwayStationArrivalVO)
         }
     }
 }
