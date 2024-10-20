@@ -116,5 +116,18 @@
             app:layout_constraintStart_toEndOf="@id/textView_subwayStationRemainingSubwayStations"
             android:layout_marginStart="2dp"/>
 
+        <View
+            android:id="@+id/textView_subwayStationLocation"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:background="@drawable/shape_circle_ffffff"
+            android:backgroundTint="@color/red"
+            app:isVisible="@{subwayStationTransfer.isCurrentLocation}"
+            app:layout_constraintTop_toTopOf="@id/view_subwayStationLine"
+            app:layout_constraintBottom_toBottomOf="@id/view_subwayStationLine"
+            app:layout_constraintStart_toStartOf="@id/view_subwayStationLine"
+            app:layout_constraintEnd_toEndOf="@id/view_subwayStationLine" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

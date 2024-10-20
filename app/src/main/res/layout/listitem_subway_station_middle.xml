@@ -28,7 +28,7 @@
         <View
             android:id="@+id/view_subwayStationLine"
             android:layout_width="8dp"
-            android:layout_height="24dp"
+            android:layout_height="40dp"
             app:background="@{subwayStationMiddle.lineNumberColor}"
             tools:background="#FF00A5DE"
             app:layout_constraintTop_toTopOf="parent"
@@ -44,6 +44,18 @@
             app:layout_constraintStart_toStartOf="@id/view_subwayStationLine"
             app:layout_constraintEnd_toEndOf="@id/view_subwayStationLine"
             android:layout_marginTop="5dp" />
+
+        <View
+            android:id="@+id/textView_subwayStationLocation"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:background="@drawable/shape_circle_ffffff"
+            android:backgroundTint="@color/red"
+            app:isVisible="@{subwayStationMiddle.isCurrentLocation}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/view_subwayStationLine"
+            app:layout_constraintEnd_toEndOf="@id/view_subwayStationLine" />
 
         <TextView
             android:id="@+id/textView_subwayStationName"
